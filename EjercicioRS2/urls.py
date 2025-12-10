@@ -8,5 +8,7 @@ urlpatterns = [
     path('populate/', views.populateDatabase),
     path('ingresar/', views.ingresar),
     path('', views.index),
-    path('cinco_artistas_mas_escuchado_de_usuario/', views.mostrar_artistas_usuario)
+    path('cinco_artistas_mas_escuchado_de_usuario/', views.mostrar_artistas_usuario),
+    path('diez_etiquetas_mas_frecuentes_de_usuarios_por_artista/', views.mostrar_artistas_usuario),
+    path('recomendar_usuarios_artistas/', views.mostrar_artistas_usuario)
 ]
