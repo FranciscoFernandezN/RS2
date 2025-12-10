@@ -2,7 +2,7 @@ from django.db import models
 
 class Artista(models.Model):
     idArtista = models.TextField(primary_key=True)
-    nombre = models.CharField(verbose_name='Nombre',max_length=100)
+    nombre = models.TextField(verbose_name='Nombre',max_length=100)
     url = models.URLField(verbose_name='URL')
     pictureUrl = models.URLField(verbose_name='Picture URL')
 
@@ -21,7 +21,7 @@ class Etiqueta(models.Model):
 class UsuarioArtista(models.Model):
     idUsuario = models.TextField(verbose_name='Id del usuario')
     idArtista = models.ForeignKey(Artista, on_delete=models.CASCADE)
-    tiempoEscucha = models.IntegerField(primary_key=True)
+    tiempoEscucha = models.IntegerField()
 
     def __str__(self):
         return self.tiempoEscucha

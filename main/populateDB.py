@@ -14,14 +14,15 @@ def populateArtist():
 
     lista = []
     dict = {}
-    fileobj = open(path + "\\artists.dat", "r")
-    fileobj.readline()
+    fileobj = open(path + "\\artists.dat", "r", encoding='latin-1')
     for line in fileobj.readlines():
         rip = str(line.strip()).split("\t")
         if len(rip) != 4:
-            continue
-        a = Artista(idArtista=rip[0], nombre=rip[1], url=rip[2], pictureUrl=rip[3])
+            a = Artista(idArtista=rip[0], nombre=rip[1], url=rip[2], pictureUrl="https://www.none.com") 
+        else:
+            a = Artista(idArtista=rip[0], nombre=rip[1], url=rip[2], pictureUrl=rip[3])
         lista.append(a)
+        
         dict[rip[0]] = a
     fileobj.close()
     Artista.objects.bulk_create(lista)
@@ -33,7 +34,7 @@ def populateTag():
 
     lista = []
     dict = {}
-    fileobj = open(path + "\\tags.dat", "r")
+    fileobj = open(path + "\\tags.dat", "r", encoding='latin-1')
     fileobj.readline()
     for line in fileobj.readlines():
         rip = str(line.strip()).split("\t")
@@ -51,7 +52,7 @@ def populateUserArtist(a):
     UsuarioArtista.objects.all().delete()
 
     lista=[]
-    fileobj=open(path + "\\user_artists.dat", "r")
+    fileobj=open(path + "\\user_artists.dat", "r", encoding='latin-1')
     fileobj.readline()
     for line in fileobj.readlines():
         rip = str(line.strip()).split("\t")
@@ -63,11 +64,13 @@ def populateUserTagArtist(a, t):
     UsuarioEtiquetaArtista.objects.all().delete()
 
     lista=[]
-    fileobj=open(path + "\\user_taggedartists.dat", "r")
+    fileobj=open(path + "\\user_taggedartists.dat", "r", encoding='latin-1')
     fileobj.readline()
     for line in fileobj.readlines():
         rip = str(line.strip()).split("\t")
-        date = datetime.datetime(rip[5], rip[4], rip[3])
-        lista.append(UsuarioEtiquetaArtista(idUsuario=rip[0], idArtista=rip[1], idTagValue=rip[2], fecha=date))
+        date = datetime(int(rip[5]), int(rip[4]), int(rip[3]))
+        #Hay un fallo porque no existe el artista 14103
+        if rip[1] in a:
+            lista.append(UsuarioEtiquetaArtista(idUsuario=rip[0], idArtista=a[rip[1]], idTagValue=t[rip[2]], fecha=date))
     fileobj.close()
     UsuarioEtiquetaArtista.objects.bulk_create(lista)
