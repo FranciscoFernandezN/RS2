@@ -25,30 +25,28 @@ def populateDatabase(request):
 def mostrar_artistas_usuario(request):
     formulario = UsuarioBusquedaForm()
     idusuario = None
-    items = None
-#tetas flojas
+    artistas = []
+
     if request.method == 'POST':
         formulario = UsuarioBusquedaForm(request.POST)
 
         if formulario.is_valid():
             idusuario = formulario.cleaned_data['idUsuario']
-            art_temp = UsuarioArtista.objects.get(idUsuario=idusuario)
-            artist = art_temp.idArtista
-            tiempo = art_temp.tiempoEscucha
-            tiempos = []
-            tiempos.append(tiempo)
-            ids = []
-            nombres = []
-            for a in artist[:5]:
-                ids.append(a)
-                nombre = get_object_or_404(Artista, pk=a).nombre
-                nombres.append(nombre)
+    
+            top_tags_qs = (UsuarioArtista.objects
+                           .filter(idUsuario=idusuario)
+                           .order_by('-tiempoEscucha')[:5])
+            
 
-            items = zip((ids, nombres), tiempos[:5])
+            # Construir lista de tuplas (Etiqueta, frecuencia) en el mismo orden
+            for entry in top_tags_qs:
+                artistas_obj = entry.idArtista
+                
+                artistas.append((artistas_obj, entry.tiempoEscucha))
 
 
     return render(request, '5_artistas.html',
-                  {'formulario': formulario, 'items': items, 'idusuario': idusuario, 'STATIC_URL': settings.STATIC_URL})
+                  {'formulario': formulario, 'items': artistas, 'idusuario': idusuario, 'STATIC_URL': settings.STATIC_URL})
 
 def mostrar_etiquetas_artistas(request):
     formulario = ArtistaBusquedaForm()
@@ -57,7 +55,7 @@ def mostrar_etiquetas_artistas(request):
 
     if request.method == 'POST':
         formulario = ArtistaBusquedaForm(request.POST)
-        
+    
         if formulario.is_valid():
             idartista = formulario.cleaned_data['idArtista']
             # Obtener todas las entradas de etiquetas para este artista,
