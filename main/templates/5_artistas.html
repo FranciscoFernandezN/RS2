@@ -1,0 +1,31 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Cinco artistas más escuchados {% endblock %}	    
+
+{% block contenido %} 
+
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>Búsqueda de usuario</legend>
+    			{{formulario}}
+    			<BR><BR>
+
+    			<input type='submit' value='Realizar Búsqueda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if items %}
+		    <h4> Cinco artistas más escuchados por {{idusuario}}:</h4>
+		    <dl class="uk-description-list-line">
+
+			{% for idartista, tiempo in items %}
+			    <dd>Artista: {{idartista}}  Tiempo escuchado:{{tiempo}}</dd>    
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+
+{% endblock %}

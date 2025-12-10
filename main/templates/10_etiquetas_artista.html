@@ -1,0 +1,29 @@
+{% extends 'master.html' %}
+
+{% block titulo %} B&uacute;squeda de etiquetas de artistas {% endblock %}    
+
+{% block contenido %} 
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>B&uacute;squeda de Artistas</legend>
+    			{{formulario}}
+    			<br><br>
+    			<input type='submit' value='Realizar B&uacute;squeda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if tags %}
+		    <h3> Etiquetas más votadas para el artista {{idartista}}: </h3>
+		    <dl>
+
+			{% for row in tags %}
+			    <dt>{{row.tagValue}}</dt>
+			{% endfor %}
+
+			</dl>
+
+		{% endif %}
+
+{% endblock %}

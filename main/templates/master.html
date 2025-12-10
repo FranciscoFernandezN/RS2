@@ -1,0 +1,49 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html lang='es'>
+  <head>
+	<meta charset='utf-8'>
+		<link rel="stylesheet" href="{{STATIC_URL}}css/uikit.min.css" />
+        <script src="{{STATIC_URL}}js/jquery.min.js"></script>
+        <script src="{{STATIC_URL}}js/uikit.min.js"></script>
+  </head>
+  <body>
+  
+
+	<h1>EJERCICIO DE RS COLABORATIVOS - MOVIELENS 100K</h1>
+    <nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+
+        <ul class="uk-navbar-nav">
+            <li class="uk-active"><a href="#">Inicio</a>
+            <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                        <li><a href="/populate">Poblar Base de Datos - Acceso Restringido</a></li>
+                        <li><a href="/loadRS">Cargar el Sistema de Recomendación</a></li>
+						<li><a href="/index.html">Sobre</a></li>
+                    </ul>
+                </div>
+            </li>
+           <li><a href="#">Búsquedas</a>
+                <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+						<li><a href="/cinco_artistas_mas_escuchado_de_usuario">Mostrar 5 artistas más escuchados por el usuario y cuánto tiempo</a></li>
+						<li><a href="/diez_etiquetas_mas_frecuentes_de_usuarios_por_artista">Mostrar 10 etiquetas más frecuentes de artistas</a></li>
+						<li><a href="/recomendar_usuarios_artistas">Recomendar artistas a usuario</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+	    
+
+		<hr>
+ 		
+ 		<h1 >{% block titulo %} {% endblock %}</h1>
+
+		{% block contenido %} {% endblock %}
+  </body>
+</html>
