@@ -26,7 +26,7 @@ def mostrar_artistas_usuario(request):
     formulario = UsuarioBusquedaForm()
     idusuario = None
     items = None
-
+#tetas flojas
     if request.method == 'POST':
         formulario = UsuarioBusquedaForm(request.POST)
 
