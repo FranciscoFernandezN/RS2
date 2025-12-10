@@ -1,5 +1,5 @@
 from main.models import Artista, Etiqueta, UsuarioEtiquetaArtista, UsuarioArtista
-from main.populate import populate
+from main.populateDB import populate
 from main.forms import  UsuarioBusquedaForm, ArtistaBusquedaForm
 from django.shortcuts import render, get_object_or_404
 from django.http.response import HttpResponseRedirect
