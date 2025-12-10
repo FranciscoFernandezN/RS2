@@ -37,6 +37,24 @@ def mostrar_artistas_usuario(request):
                   {'formulario': formulario, 'idusuario': idusuario, 'idartista': artista.idArtista, 'nombre_artista': artista.name, 
                    'tiempo': tiempo, 'STATIC_URL': settings.STATIC_URL})
 
+def mostrar_etiquetas_artistas(request):
+    formulario = ArtistaBusquedaForm()
+    idartista = None
+
+    if request.method == 'POST':
+        formulario = ArtistaBusquedaForm(request.POST)
+
+        if formulario.is_valid():
+            idartista = formulario.cleaned_data['idartista']
+            artista = get_object_or_404(Artista, idArtista=idartista)
+            art_temp = UsuarioEtiquetaArtista.objects.filter(idArtista=idartista)
+            idtag = art_temp[2]
+            tag = get_object_or_404(Etiqueta, idTag=idtag)
+
+    return render(request, '10_etiquetas_artistas.html',
+                  {'formulario': formulario, 'idartista': artista.idArtista, 'nombre_artista': artista.name, 
+                   'tag': tag.tagValue, 'STATIC_URL': settings.STATIC_URL})
+
 def index(request):
     return render(request, 'index.html',{'STATIC_URL':settings.STATIC_URL})
 
