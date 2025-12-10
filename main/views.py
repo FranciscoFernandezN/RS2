@@ -1,3 +1,5 @@
+from matplotlib import artist
+
 from main.models import Artista, Etiqueta, UsuarioEtiquetaArtista, UsuarioArtista
 from main.populateDB import populate
 from main.forms import  UsuarioBusquedaForm, ArtistaBusquedaForm
@@ -22,20 +24,30 @@ def populateDatabase(request):
 def mostrar_artistas_usuario(request):
     formulario = UsuarioBusquedaForm()
     idusuario = None
+    items = None
 
     if request.method == 'POST':
         formulario = UsuarioBusquedaForm(request.POST)
 
         if formulario.is_valid():
             idusuario = formulario.cleaned_data['idUsuario']
-            art_temp = UsuarioArtista.objects.filter(idUsuario=idusuario)
-            artist = art_temp[1]
-            artista = get_object_or_404(Artista, idArtista=artist.idArtista)
-            tiempo = art_temp[2].tiempoEscucha
+            art_temp = UsuarioArtista.objects.get(idUsuario=idusuario)
+            artist = art_temp.idArtista
+            tiempo = art_temp.tiempoEscucha
+            tiempos = []
+            tiempos.append(tiempo)
+            ids = []
+            nombres = []
+            for a in artist[:5]:
+                ids.append(a)
+                nombre = get_object_or_404(Artista, pk=a).nombre
+                nombres.append(nombre)
+
+            items = zip((ids, nombres), tiempos[:5])
+
 
     return render(request, '5_artistas.html',
-                  {'formulario': formulario, 'idusuario': idusuario, 'idartista': artista.idArtista, 'nombre_artista': artista.name, 
-                   'tiempo': tiempo, 'STATIC_URL': settings.STATIC_URL})
+                  {'formulario': formulario, 'items': items, 'idusuario': idusuario, 'STATIC_URL': settings.STATIC_URL})
 
 def index(request):
     return render(request, 'index.html',{'STATIC_URL':settings.STATIC_URL})
