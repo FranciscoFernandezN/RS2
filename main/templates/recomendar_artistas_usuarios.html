@@ -1,0 +1,34 @@
+{% extends 'master.html' %}
+
+{% block titulo %} Recomendación de artistas para un usuario {% endblock %}	    
+
+{% block contenido %} 
+
+    	<form id="formulario" method="post" action=''>{% csrf_token %}
+    		<fieldset>
+    			<legend>Búsqueda de Usuario</legend>
+    			{{formulario}}
+    			<BR><BR>
+
+    			<input type='submit' value='Realizar Búsqueda'/>
+    		</fieldset>
+    	</form>
+	    
+	    <hr>
+
+	    {% if items %}
+		    <h4> Artistas recomendados para el usuario {{idusuario}}</h4>
+		    <dl class="uk-description-list-line">
+
+			{% for artista in items %}
+			    <dd>Artista: {{artista.nombre}}</dd>    
+			{% endfor %}
+
+			</dl>
+        {% else %}
+            {% if idusuario %}
+            <h4> No hay recomendaciones para el usuario {{idusuario}}</h4>
+            {% endif %}
+		{% endif %}
+
+{% endblock %}

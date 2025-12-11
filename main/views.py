@@ -7,12 +7,29 @@ from django.shortcuts import render, get_object_or_404
 from django.http.response import HttpResponseRedirect
 from django.conf import settings
 from django.db.models import Count
-#from main.recommendations import  transformPrefs, calculateSimilarItems, getRecommendations, getRecommendedItems, topMatches
+from main.recommendations import  transformPrefs, calculateSimilarItems, getRecommendations, getRecommendedItems, topMatches
 import shelve
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+
+# Funcion que carga en el diccionario Prefs todas las puntuaciones de usuarios a peliculas. Tambien carga el diccionario inverso
+# Serializa los resultados en dataRS.dat
+def loadDict():
+    Prefs={}   # matriz de usuarios y puntuaciones a cada a items
+    shelf = shelve.open("dataRS.dat")
+    ratings = UsuarioArtista.objects.all()
+    for ra in ratings:
+        user = int(ra.idUsuario)
+        itemid = int(ra.idArtista.idArtista)
+        rating = float(ra.tiempoEscucha)
+        Prefs.setdefault(user, {})
+        Prefs[user][itemid] = rating
+    shelf['Prefs']=Prefs
+    shelf['ItemsPrefs']=transformPrefs(Prefs)
+    shelf['SimItems']=calculateSimilarItems(Prefs, n=10)
+    shelf.close()
 
 #Funcion de acceso restringido que carga los datos en la BD
 @login_required(login_url='/ingresar')
@@ -48,6 +65,10 @@ def mostrar_artistas_usuario(request):
     return render(request, '5_artistas.html',
                   {'formulario': formulario, 'items': artistas, 'idusuario': idusuario, 'STATIC_URL': settings.STATIC_URL})
 
+def loadRS(request):
+    loadDict()
+    return HttpResponseRedirect('/index.html')
+
 def mostrar_etiquetas_artistas(request):
     formulario = ArtistaBusquedaForm()
     idartista = None
@@ -78,6 +99,53 @@ def mostrar_etiquetas_artistas(request):
                    'idartista': idartista,
                    'tags': etiquetas,
                    'STATIC_URL': settings.STATIC_URL})
+
+def recomendar_artistas_usuario_RSusuario(request):
+    formulario = UsuarioBusquedaForm()
+    items = None
+    idusuario = None
+    
+    if request.method=='POST':
+        formulario = UsuarioBusquedaForm(request.POST)
+        
+        if formulario.is_valid():
+            idusuario=formulario.cleaned_data['idUsuario']
+            shelf = shelve.open("dataRS.dat")
+            Prefs = shelf['Prefs']
+            shelf.close()
+            rankings = getRecommendations(Prefs,int(idusuario))
+            artistas = []
+            for re in rankings:
+                artistas.append(Artista.objects.get(pk=re[1]))
+            items= artistas
+        else:
+            print(formulario.errors)
+    
+    return render(request, 'recomendar_artistas_usuarios.html', {'formulario':formulario, 'items':items, 'idusuario':idusuario, 'STATIC_URL':settings.STATIC_URL})
+
+
+def recomendar_artistas_usuario_RSitems(request):
+    formulario = UsuarioBusquedaForm()
+    items = None
+    idusuario = None
+        
+    if request.method=='POST':
+        formulario = UsuarioBusquedaForm(request.POST)
+        
+        if formulario.is_valid():
+            idusuario=formulario.cleaned_data['idUsuario']
+            shelf = shelve.open("dataRS.dat")
+            Prefs = shelf['Prefs']
+            SimItems = shelf['SimItems']
+            shelf.close()
+            rankings = getRecommendedItems(Prefs, SimItems, int(idusuario))
+            artistas = []
+            for re in rankings:
+                artistas.append(Artista.objects.get(pk=re[1]))
+            items= artistas
+    
+    return render(request, 'recomendar_artistas_usuarios.html', {'formulario':formulario, 'items':items, 'idusuario':idusuario, 'STATIC_URL':settings.STATIC_URL})
+
 
 def index(request):
     return render(request, 'index.html',{'STATIC_URL':settings.STATIC_URL})
